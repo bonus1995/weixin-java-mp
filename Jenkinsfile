@@ -32,7 +32,7 @@ node('haimaxy-jnlp') {
             input "确认要部署线上环境吗？"
         }
         sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
-        sh "kubectl apply -f k8s.yaml --record"
+        kubernetesDeploy configs: 'k8s.yaml', kubeconfigId: 'edb797b6-2c27-4ef8-8a49-6d7fa07de49d'
     }
 }
 
