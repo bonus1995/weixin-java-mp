@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weixin-java-mp-demo
+  namespace: hzx
+spec:
+  selector:
+    matchLabels:
+      app: weixin-java-mp-demo
+  template:
+    metadata:
+      labels:
+        app: weixin-java-mp-demo
+    spec:
+      containers:
+      - image: harbor-k8s.iwgame.com/containers/weixin-java-mp-demo:<BUILD_TAG>
+        imagePullPolicy: IfNotPresent
+        name: weixin-java-mp-demo
+
