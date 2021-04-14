@@ -26,13 +26,15 @@ node('haimaxy-jnlp') {
 			sh "docker push harbor-k8s.iwgame.com/containers/weixin-java-mp-demo:${build_tag}"
         }
     }
-    stage('Deploy') {
+    stage('部署') {
         echo "5. Deploy Stage"
+            sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
         if (env.BRANCH_NAME == 'master') {
             input "确认要部署线上环境吗？"
-        }
-        sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
-        kubernetesDeploy configs: 'k8s.yaml', kubeconfigId: 'edb797b6-2c27-4ef8-8a49-6d7fa07de49d'
+            kubernetesDeploy configs: 'k8s.yaml', kubeconfigId: 'c9333abb-444d-4ff9-bec1-b0ac3135c307'
+        } else {
+            kubernetesDeploy configs: 'k8s.yaml', kubeconfigId: 'edb797b6-2c27-4ef8-8a49-6d7fa07de49d'
+       }
     }
 }
 
