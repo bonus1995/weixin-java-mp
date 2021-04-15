@@ -11,7 +11,7 @@ node('haimaxy-jnlp') {
     }
     stage('代码编译') {
       echo "2.mvn Stage"
-      docker.image('maven:3.3.3').inside {
+      docker.image('maven:3.3.3').inside('-v $HOME/.m2:/root/.m2') {
       sh "mvn clean install -DskipTests"
     }
     }
