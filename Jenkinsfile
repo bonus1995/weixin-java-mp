@@ -1,9 +1,16 @@
+//镜像仓库
+def registry='harbor-k8s.iwgame.com'
+//镜像仓库项目名称
+def project='containers'
+
+
 node('haimaxy-jnlp') {
     stage('准备') {
         echo "1.Prepare Stage"
         checkout scm
         script {
             build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+	    job_name = sh(returnStdout: true, script: 'basename -s .git `git config --get remote.origin.url`').trim()
             if (env.BRANCH_NAME != 'master') {
                 build_tag = "${env.BRANCH_NAME}-${build_tag}"
             }
@@ -17,13 +24,13 @@ node('haimaxy-jnlp') {
     }
     stage('构建镜像') {
         echo "3.Build Docker Image Stage"
-        sh "docker build -t harbor-k8s.iwgame.com/containers/weixin-java-mp-demo:${build_tag} ."
+        sh "docker build -t ${registry}/${project}/${job_name}:${build_tag} ."
     }
     stage('推送镜像') {
         echo "4.Push Docker Image Stage"
         withCredentials([usernamePassword(credentialsId: 'harbor', passwordVariable: 'harborPassword', usernameVariable: 'harborUser')]) {
-            sh "docker login harbor-k8s.iwgame.com -u ${harborUser} -p ${harborPassword}"
-			sh "docker push harbor-k8s.iwgame.com/containers/weixin-java-mp-demo:${build_tag}"
+            sh "docker login ${registry} -u ${harborUser} -p ${harborPassword}"
+			sh "docker push ${registry}/${project}/${job_name}:${build_tag}"
         }
     }
     stage('部署') {
