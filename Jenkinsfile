@@ -1,9 +1,3 @@
-//镜像仓库
-def registry='harbor-k8s.iwgame.com'
-//镜像仓库项目名称
-def project='containers'
-
-
 node('haimaxy-jnlp') {
     stage('准备') {
         echo "1.Prepare Stage"
@@ -11,6 +5,8 @@ node('haimaxy-jnlp') {
         script {
             build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
 	    job_name = sh(returnStdout: true, script: 'basename -s .git `git config --get remote.origin.url`').trim()
+	    registry = sh(returnStdout: true, script: 'echo harbor-k8s.iwgame.com').trim()
+            project = sh(returnStdout: true, script: 'echo containers').trim()
             if (env.BRANCH_NAME != 'master') {
                 build_tag = "${env.BRANCH_NAME}-${build_tag}"
             }
@@ -32,13 +28,14 @@ node('haimaxy-jnlp') {
         def image_name="${registry}/${project}/${job_name}:${build_tag}"
         withCredentials([usernamePassword(credentialsId: 'harbor', passwordVariable: 'harborPassword', usernameVariable: 'harborUser')]) {
             sh "docker login ${registry} -u ${harborUser} -p ${harborPassword}"
-			sh "docker push ${image_name}"
+            sh "docker push ${image_name}"
         }
     }
     stage('部署') {
         echo "5. Deploy Stage"
         def image_name="${registry}/${project}/${job_name}:${build_tag}"
-           // sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
+        sh "sed -i 's/<job_name>/${job_name}/' k8s.yaml"
+        sh "sed -i 's/<image_name>/${image_name}/' k8s.yaml"
         if (env.BRANCH_NAME == 'master') {
             input "确认要部署线上环境吗？"
             kubernetesDeploy configs: 'k8s.yaml', kubeconfigId: 'c9333abb-444d-4ff9-bec1-b0ac3135c307'

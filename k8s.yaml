@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${job_name}
+  name: <job_name>
   namespace: hzx
 spec:
   selector:
     matchLabels:
-      app: ${job_name}
+      app: <job_name>
   template:
     metadata:
       labels:
-        app: ${job_name}
+        app: <job_name>
     spec:
       containers:
-      - image: ${image_name} 
+      - image: <image_name>
         imagePullPolicy: IfNotPresent
-        name: ${job_name}
+        name: <job_name>
 
