@@ -31,7 +31,7 @@ node('haimaxy-jnlp') {
         echo "4.Push Docker Image Stage"
         withCredentials([usernamePassword(credentialsId: 'harbor', passwordVariable: 'harborPassword', usernameVariable: 'harborUser')]) {
             sh "docker login ${registry} -u ${harborUser} -p ${harborPassword}"
-			sh "docker push ${mage_name}"
+			sh "docker push ${image_name}"
         }
     }
     stage('部署') {
