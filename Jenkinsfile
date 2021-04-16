@@ -29,6 +29,7 @@ node('haimaxy-jnlp') {
     }
     stage('推送镜像') {
         echo "4.Push Docker Image Stage"
+        def image_name="${registry}/${project}/${job_name}:${build_tag}"
         withCredentials([usernamePassword(credentialsId: 'harbor', passwordVariable: 'harborPassword', usernameVariable: 'harborUser')]) {
             sh "docker login ${registry} -u ${harborUser} -p ${harborPassword}"
 			sh "docker push ${image_name}"
@@ -36,6 +37,7 @@ node('haimaxy-jnlp') {
     }
     stage('部署') {
         echo "5. Deploy Stage"
+        def image_name="${registry}/${project}/${job_name}:${build_tag}"
            // sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
         if (env.BRANCH_NAME == 'master') {
             input "确认要部署线上环境吗？"
