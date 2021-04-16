@@ -1,7 +1,5 @@
 node('haimaxy-jnlp') {
 
-    options { timestamps() }
-            
     stage('准备') {
         echo "1.Prepare Stage"
         checkout scm
