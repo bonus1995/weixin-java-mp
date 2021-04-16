@@ -35,7 +35,7 @@ node('haimaxy-jnlp') {
         echo "5. Deploy Stage"
         def image_name="${registry}/${project}/${job_name}:${build_tag}"
         sh "sed -i 's/<job_name>/${job_name}/' k8s.yaml"
-        sh "sed -i 's/<image_name>/${image_name}/' k8s.yaml"
+        sh "sed -i 's@/<image_name>@${image_name}@' k8s.yaml"
         if (env.BRANCH_NAME == 'master') {
             input "确认要部署线上环境吗？"
             kubernetesDeploy configs: 'k8s.yaml', kubeconfigId: 'c9333abb-444d-4ff9-bec1-b0ac3135c307'
