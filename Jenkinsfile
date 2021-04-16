@@ -24,18 +24,19 @@ node('haimaxy-jnlp') {
     }
     stage('构建镜像') {
         echo "3.Build Docker Image Stage"
-        sh "docker build -t ${registry}/${project}/${job_name}:${build_tag} ."
+        def image_name="${registry}/${project}/${job_name}:${build_tag}"
+        sh "docker build -t ${image_name} ."
     }
     stage('推送镜像') {
         echo "4.Push Docker Image Stage"
         withCredentials([usernamePassword(credentialsId: 'harbor', passwordVariable: 'harborPassword', usernameVariable: 'harborUser')]) {
             sh "docker login ${registry} -u ${harborUser} -p ${harborPassword}"
-			sh "docker push ${registry}/${project}/${job_name}:${build_tag}"
+			sh "docker push ${mage_name}"
         }
     }
     stage('部署') {
         echo "5. Deploy Stage"
-            sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
+           // sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
         if (env.BRANCH_NAME == 'master') {
             input "确认要部署线上环境吗？"
             kubernetesDeploy configs: 'k8s.yaml', kubeconfigId: 'c9333abb-444d-4ff9-bec1-b0ac3135c307'
