@@ -1,5 +1,4 @@
 node('haimaxy-jnlp') {
-
     stage('准备') {
         echo "1.Prepare Stage"
         checkout scm
@@ -46,4 +45,3 @@ node('haimaxy-jnlp') {
        }
     }
 }
-
